@@ -2,4 +2,5 @@ anthropic>=0.75
 openai>=1.40
 pydantic>=2
 python-dotenv
+streamlit>=1.40
 pytest

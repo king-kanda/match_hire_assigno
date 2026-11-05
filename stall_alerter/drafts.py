@@ -9,14 +9,25 @@ from stall_alerter.providers import LLMConfig
 from stall_alerter.rank import Ranked
 
 
+CANDIDATE_LINE = {
+    "Applied": "We're reviewing applications now and I'll be in touch with next steps within the next few days.",
+    "Screening": "I'd like to set up a short screening call. Could you share a couple of times that work for you this week?",
+    "Interview": "I'm pulling together the interview feedback and will come back to you with the next step shortly.",
+    "Final": "We're finalising our decision after your final interview and I'll update you very soon.",
+    "Offer": "I wanted to check how you're feeling about the offer and whether you have any questions I can answer.",
+}
+
+
 def template_draft(r: Ranked) -> str:
+    """Rules-only draft, written to the candidate (the manager's to-do stays in next_action)."""
     c = r.flag.candidate
     first = c.name.split()[0]
     if r.flag.owe_reply:
-        opener = f"Hi {first}, apologies for the slow reply on your last message."
+        body = (f"Hi {first}, apologies for the slow reply to your last message about the {c.role} role. "
+                f"I'm on it and will get back to you with a full answer by tomorrow.")
     else:
-        opener = f"Hi {first}, I wanted to check in on your application for the {c.role} role."
-    return f"{opener} {r.next_action} Happy to answer any questions in the meantime.\n\n{c.owner}"
+        body = f"Hi {first}, thanks for your patience with the {c.role} role. {CANDIDATE_LINE[c.stage]}"
+    return f"{body}\n\nBest,\n{c.owner}"
 
 
 def build_drafts(top: list[Ranked], cfg: LLMConfig | None) -> dict[str, str]:

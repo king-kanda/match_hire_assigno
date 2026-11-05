@@ -83,3 +83,17 @@ def test_days_credit_is_capped(flags):
 
 def test_threshold_option(board):
     assert len(find_stalled(board.active, TODAY, 10)) < len(find_stalled(board.active, TODAY, 3))
+
+
+def test_upload_text_matches_file(board):
+    from stall_alerter.load import load_board_text
+
+    text_board = load_board_text(BOARD.read_text(encoding="utf-8"))
+    assert len(text_board.active) == len(board.active) and text_board.problems == board.problems
+
+
+def test_missing_columns_rejected():
+    from stall_alerter.load import load_board_text
+
+    with pytest.raises(ValueError, match="missing required columns"):
+        load_board_text("candidate_id,name\nC1,X\n")

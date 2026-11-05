@@ -33,7 +33,15 @@ cp .env.example .env             # add ANTHROPIC_API_KEY (optional)
 ```
 With [uv](https://docs.astral.sh/uv/): `uv venv --python 3.12 && uv pip install -r requirements.txt`.
 
-## Run
+## Web UI (for the demo)
+```bash
+streamlit run app.py
+```
+It loads the sample board by default (or upload your own CSV). Pick a provider, see the ranked list,
+then generate drafts and **edit / approve / skip** each one; download only the approved ones.
+Full walkthrough: [TESTING.md](TESTING.md).
+
+## CLI
 The sample data is dated around **2026-11-06**, so pass `--today 2026-11-06` to reproduce the demo.
 Drop `--today` to use the real date on your own board.
 
@@ -61,6 +69,7 @@ Output:
 ```bash
 pytest
 ```
+Step-by-step manual testing (UI, CLI, what to check in the AI output): [TESTING.md](TESTING.md).
 Tests check the sample board against [data/EXPECTED.md](data/EXPECTED.md): the flagged set, boundary,
 contact-resets-clock, owe-reply, ties, capped days, AI clamp, fallback, draft review and CLI output.
 
