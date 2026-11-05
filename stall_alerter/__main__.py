@@ -1,3 +1,5 @@
+import sys
+
 from stall_alerter.cli import main
 
-main()
+sys.exit(main())

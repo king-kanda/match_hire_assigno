@@ -5,3 +5,4 @@ __pycache__/
 report.md
 report.csv
 .pytest_cache/
+out/

@@ -15,6 +15,8 @@ or that a candidate replied and we never answered, until they withdraw.
 - Used: reading free-text notes to adjust priority within a limit, and writing the reason, the next action and an optional draft message.
 - A human approves every draft. Nothing is sent automatically.
 
-**Success:** _(fill in: the one sentence a reviewer can check in the Loom)_
+**Success:** On the 46-row sample board, one command flags exactly the 24 expected candidates
+(see `data/EXPECTED.md`), puts the two most urgent (an Offer gone quiet and a candidate waiting on our reply)
+in the top 2, gives every row a reason and a next action, and still works with no API key.
 
 **Out of scope:** sending messages, ATS integrations, a web UI.

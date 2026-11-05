@@ -1,1 +1,47 @@
 candidate_id,name,role,stage,stage_entered_date,last_contact_date,last_contact_by,owner,notes
+C001,Wanjiru Kamau,Backend Engineer,Offer,2026-10-30,2026-10-31,us,Amina,"Offer sent. Mentioned a competing offer from a bank, decision due Monday."
+C002,Daniel Otieno,Backend Engineer,Offer,2026-11-03,2026-11-03,us,Amina,"Verbal yes, waiting on signed letter."
+C003,Grace Achieng,Product Designer,Final,2026-10-28,2026-11-02,them,Brian,"Asked about the remote work policy. No answer from us yet."
+C004,Kevin Mwangi,Data Analyst,Final,2026-10-25,2026-11-05,us,Brian,"Called yesterday to schedule the panel."
+C005,Faith Njeri,Sales Lead,Interview,2026-10-29,2026-10-29,us,Amina,"Strong candidate but slow to reply."
+C006,Peter Kiprop,Sales Lead,Interview,2026-10-29,2026-10-29,us,Amina,"Relocating from Kisumu in March, flexible start date."
+C007,Mercy Wambui,Backend Engineer,Screening,2026-10-20,,,Brian,
+C008,James Odhiambo,Product Designer,Hired,2026-10-15,2026-10-20,us,Brian,"Started 1 Nov."
+C009,Lucy Chebet,Data Analyst,Rejected,2026-10-18,2026-10-18,us,Carol,"Not enough SQL depth."
+C010,Brian Kiprotich,Data Analyst,Applied,2026-11-04,,,Carol,
+C011,Ann Mutua,Backend Engineer,Applied,2026-10-27,,,Amina,
+C012,Samuel Kariuki,Product Designer,Interview,2026-11-01,2026-11-04,them,Brian,"Sent follow-up questions about the portfolio task."
+C013,Esther Wanjiku,Sales Lead,Screening,2026-11-02,2026-11-05,us,Carol,"Phone screen booked for Friday."
+C014,Joseph Mutiso,Backend Engineer,Interview,2026-10-30,2026-11-01,them,Carol,"Got the take-home task, asked for a 2-day extension."
+C015,Purity Atieno,Data Analyst,Screening,2026-10-31,2026-10-31,us,Carol,
+C016,Collins Omondi,Product Designer,Applied,2026-11-05,,,Brian,
+C017,Naomi Jeptoo,Backend Engineer,Final,2026-11-04,2026-11-04,us,Amina,"Panel done, debrief pending."
+C018,Victor Muriuki,Sales Lead,Offer,2026-11-05,2026-11-05,us,Carol,"Offer sent yesterday."
+C019,Diana Nyambura,Data Analyst,Interview,2026-10-26,2026-10-26,us,Brian,"Interviewer was out sick, needs a new slot."
+C020,Felix Ouma,Product Designer,Screening,2026-10-22,2026-11-03,them,Brian,"Replied with availability for next week."
+C021,Ruth Kemunto,Backend Engineer,Applied,2026-10-30,,,Amina,"Referral from the CTO."
+C022,George Waweru,Sales Lead,Applied,2026-11-03,,,Carol,
+C023,Irene Moraa,Data Analyst,Final,2026-10-31,2026-11-01,us,Brian,"Said she is interviewing elsewhere."
+C024,Martin Kibet,Backend Engineer,Screening,2026-11-04,2026-11-04,us,Amina,
+C025,Sharon Akinyi,Product Designer,Interview,2026-11-03,2026-11-05,us,Brian,
+C026,Paul Gitau,Sales Lead,Hired,2026-10-10,2026-10-12,us,Carol,
+C027,Caroline Wairimu,Backend Engineer,Rejected,2026-10-20,2026-10-20,us,Amina,
+C028,Dennis Owino,Data Analyst,Applied,2026-10-15,,,Brian,"Overqualified, salary expectations well above band."
+C029,Lilian Nduta,Sales Lead,Interview,2026-11-02,2026-11-02,us,Carol,"Hiring panel asked for a second round."
+C030,Erick Onyango,Backend Engineer,Final,2026-11-01,2026-11-05,them,Amina,"Confirmed panel time."
+C031,Beatrice Muthoni,Product Designer,Offer,2026-10-28,2026-11-04,them,Brian,"Asked to negotiate start date."
+C032,Moses Kiplagat,Data Analyst,Screening,2026-11-01,,,Carol,
+C033,Agnes Wangari,Sales Lead,Applied,2026-11-04,,,Carol,
+C034,Hillary Langat,Backend Engineer,Interview,2026-10-24,2026-10-30,us,Amina,"Waiting on written feedback from the interviewer."
+C035,Joy Wanjala,Product Designer,Applied,2026-11-01,,,Brian,
+C036,Tom Okello,Data Analyst,Interview,2026-11-05,2026-11-05,us,Brian,
+C037,Nancy Chepkoech,Sales Lead,Final,2026-10-29,2026-10-29,us,Carol,"Waiting on hiring manager's final decision."
+C038,Stephen Mbugua,Backend Engineer,Applied,2026-11-06,,,Amina,
+C039,Rose Adhiambo,Product Designer,Screening,2026-10-29,2026-11-04,us,Brian,
+C040,Isaac Ruto,Sales Lead,Screening,2026-10-27,2026-10-27,them,Carol,"Asked if the role is open to hybrid."
+C041,Winnie Awino,Data Analyst,Applied,2026-10-31,,,Brian,
+C042,Alex Kimani,Backend Engineer,Offer,2026-11-02,2026-11-02,us,Amina,"Current employer likely to counter-offer."
+C043,Mary Njoroge,Product Designer,Interview,2026-11-04,2026-11-04,us,Brian,
+C044,Patrick Omolo,Sales Lead,Interview,,2026-10-30,us,Carol,"Stage date missing in the export."
+C045,Zawadi Hassan,Data Analyst,Onsite,2026-10-28,2026-10-28,us,Brian,"Unknown stage label."
+C046,Kelvin Barasa,Data Analyst,Screening,2026-10-30,2026-10-30,us,Carol,"Good SQL test score."
