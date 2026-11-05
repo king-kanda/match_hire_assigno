@@ -20,7 +20,7 @@ there's a drafted follow-up message that they approve or edit before anything is
 | AI signals | Free-text notes: competing offers, availability, flight risk, enthusiasm |
 | Output | Terminal table plus a `report.md`/`report.csv` |
 | Drafted nudge | In scope, **first to cut**. Always needs human approval and is never sent automatically. |
-| Stack | Python 3.11+ CLI with the Anthropic SDK (`claude-sonnet-5-5`) |
+| Stack | Python 3.10+ CLI. LLM is switchable: Anthropic (default `claude-sonnet-5-5`), OpenAI, Groq, OpenRouter |
 | No API key | Falls back to a rules-only ranking so the demo can't fail |
 
 ## CSV schema (`data/board.csv`)

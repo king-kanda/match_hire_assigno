@@ -16,6 +16,8 @@
 5. Bad data is reported, never silently dropped.
 6. Nothing is sent. Drafts always go through approve / edit / skip by a human.
 7. One batched API call per step (not one per candidate), structured output via a Pydantic schema.
+8. The LLM is swappable (Anthropic, OpenAI, Groq, OpenRouter). No provider-specific logic outside `providers.py`,
+   and every response is validated against the schema before it is used.
 
 **How to check the work**
 - `pytest` passes, the flagged set equals `EXPECTED.md`, and the top 2 are the expected two.

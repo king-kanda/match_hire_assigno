@@ -5,9 +5,23 @@ a hiring manager should follow up with first, with a one-sentence reason and a n
 Optionally drafts follow-up messages that **a human approves, edits or skips. Nothing is ever sent.**
 
 - **Rules decide** who is stalled and the base priority (stage, days quiet, whether we owe a reply).
-- **Claude** (`claude-sonnet-5-5`) reads the free-text notes, can nudge each score by at most ±2
+- **An LLM of your choice** reads the free-text notes, can nudge each score by at most ±2
   (clamped in code), and writes the reason, the next action and the drafts.
-- **No API key?** It falls back to rules-only output, so the tool always runs.
+- **No API key, or the provider fails?** It falls back to rules-only output, so the tool always runs.
+
+## LLM providers
+Switch with `--provider` / `--model`, or set `LLM_PROVIDER` / `LLM_MODEL` in `.env` (flags win).
+
+| `--provider` | Key in `.env` | Default model |
+|---|---|---|
+| `anthropic` (default) | `ANTHROPIC_API_KEY` | `claude-sonnet-5-5` |
+| `openai` | `OPENAI_API_KEY` | `gpt-4.1-mini` |
+| `groq` | `GROQ_API_KEY` | `llama-3.3-70b-versatile` |
+| `openrouter` | `OPENROUTER_API_KEY` | `openai/gpt-4.1-mini` |
+
+Defaults are starting points; check the provider's current model list and pass `--model` to change.
+Claude uses the Anthropic SDK's structured output. OpenAI, Groq and OpenRouter share one
+OpenAI-compatible adapter using JSON mode, and every response is validated with Pydantic before use.
 
 ## Setup
 Requires Python 3.10+.
@@ -27,6 +41,8 @@ Drop `--today` to use the real date on your own board.
 python -m stall_alerter data/board.csv --today 2026-11-06            # AI-assisted ranking
 python -m stall_alerter data/board.csv --today 2026-11-06 --no-ai    # rules only
 python -m stall_alerter data/board.csv --today 2026-11-06 --drafts   # + review drafts for the top 5
+python -m stall_alerter data/board.csv --today 2026-11-06 --provider groq
+python -m stall_alerter data/board.csv --today 2026-11-06 --provider openrouter --model anthropic/claude-sonnet-4.5
 python -m stall_alerter data/board.csv --days 5 --top 3 --out out/   # other options
 ```
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Callable
 
 from stall_alerter import llm
+from stall_alerter.providers import LLMConfig
 from stall_alerter.rank import Ranked
 
 
@@ -18,9 +19,10 @@ def template_draft(r: Ranked) -> str:
     return f"{opener} {r.next_action} Happy to answer any questions in the meantime.\n\n{c.owner}"
 
 
-def build_drafts(top: list[Ranked], use_ai: bool) -> dict[str, str]:
+def build_drafts(top: list[Ranked], cfg: LLMConfig | None) -> dict[str, str]:
+    """cfg=None means templates only."""
     drafts: dict[str, str] = {}
-    if use_ai:
+    if cfg:
         items = [
             {
                 "candidate_id": r.flag.candidate.candidate_id,
@@ -34,7 +36,7 @@ def build_drafts(top: list[Ranked], use_ai: bool) -> dict[str, str]:
             }
             for r in top
         ]
-        drafts = llm.draft_messages(items)
+        drafts = llm.draft_messages(items, cfg)
     for r in top:
         drafts.setdefault(r.flag.candidate.candidate_id, template_draft(r))
     return drafts

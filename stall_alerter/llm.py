@@ -1,19 +1,18 @@
-"""Claude layer: reads notes, suggests a limited score adjustment, a reason and a next action.
+"""AI layer: reads notes, suggests a limited score adjustment, a reason and a next action.
 
 The AI never decides who is stalled; rules do that. Its adjustment is clamped in rank.py,
-so the prompt is not trusted to enforce the limit.
+so the prompt is not trusted to enforce the limit. The provider/model is pluggable (see providers.py).
 """
 
 from __future__ import annotations
 
 import json
-import sys
 
 from pydantic import BaseModel
 
+from stall_alerter.providers import LLMConfig, complete_json
 from stall_alerter.rules import Flag
 
-MODEL = "claude-sonnet-5-5"
 MAX_ADJUSTMENT = 2  # enforced in rank.py
 
 SYSTEM = f"""You help a busy hiring manager decide which stalled candidates to follow up first.
@@ -61,60 +60,25 @@ def _flag_payload(f: Flag) -> dict:
     }
 
 
-def _client():
-    import anthropic
-
-    return anthropic.Anthropic()
-
-
-def assess(flags: list[Flag], client=None) -> dict[str, Assessment]:
-    """One API call for the whole stalled list. Returns {} on any failure (caller falls back to rules)."""
+def assess(flags: list[Flag], cfg: LLMConfig, client=None) -> dict[str, Assessment]:
+    """One call for the whole stalled list. Returns {} on any failure (caller falls back to rules)."""
     if not flags:
         return {}
-    import anthropic
-
-    try:
-        client = client or _client()
-        response = client.messages.parse(
-            model=MODEL,
-            max_tokens=16000,
-            system=SYSTEM,
-            messages=[{"role": "user", "content": json.dumps([_flag_payload(f) for f in flags], indent=1)}],
-            output_format=AssessmentBatch,
-        )
-    except (anthropic.AnthropicError, TypeError) as e:
-        print(f"[warn] AI step failed, using rules only: {e}", file=sys.stderr)
-        return {}
-    if response.stop_reason == "refusal" or response.parsed_output is None:
-        print(f"[warn] AI returned no usable output (stop_reason={response.stop_reason}); using rules only.", file=sys.stderr)
-        return {}
-    return {a.candidate_id: a for a in response.parsed_output.assessments}
+    user = json.dumps([_flag_payload(f) for f in flags], indent=1)
+    result = complete_json(cfg, SYSTEM, user, AssessmentBatch, client)
+    return {a.candidate_id: a for a in result.assessments} if result else {}
 
 
 DRAFT_SYSTEM = """You draft short follow-up messages from a hiring manager to candidates.
 Each message: 2-4 sentences, warm and specific, plain text, no subject line, no placeholders like [Name].
 Address the candidate by first name and sign off as the given owner. Base it on the stage, the notes
-and the suggested next action. Never promise an offer, salary or outcome that is not in the data."""
+and the suggested next action. Never promise an offer, salary or outcome that is not in the data.
+Return one draft per candidate_id."""
 
 
-def draft_messages(items: list[dict], client=None) -> dict[str, str]:
+def draft_messages(items: list[dict], cfg: LLMConfig, client=None) -> dict[str, str]:
     """items: dicts with candidate_id, name, role, stage, owner, notes, next_action. Returns {} on failure."""
     if not items:
         return {}
-    import anthropic
-
-    try:
-        client = client or _client()
-        response = client.messages.parse(
-            model=MODEL,
-            max_tokens=16000,
-            system=DRAFT_SYSTEM,
-            messages=[{"role": "user", "content": json.dumps(items, indent=1)}],
-            output_format=DraftBatch,
-        )
-    except (anthropic.AnthropicError, TypeError) as e:
-        print(f"[warn] Draft step failed, using templates: {e}", file=sys.stderr)
-        return {}
-    if response.stop_reason == "refusal" or response.parsed_output is None:
-        return {}
-    return {d.candidate_id: d.message for d in response.parsed_output.drafts}
+    result = complete_json(cfg, DRAFT_SYSTEM, json.dumps(items, indent=1), DraftBatch, client)
+    return {d.candidate_id: d.message for d in result.drafts} if result else {}

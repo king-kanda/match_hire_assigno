@@ -42,7 +42,7 @@ def test_unknown_or_missing_ai_rows_fall_back_to_rules():
 
 def test_review_approve_edit_skip():
     top = rank(_flags())[:3]
-    d = drafts.build_drafts(top, use_ai=False)
+    d = drafts.build_drafts(top, None)
     answers = iter(["a", "e", "New text", "a", "s"])
     approved = drafts.review(top, d, ask=lambda _: next(answers), say=lambda _: None)
     assert [t for _, t in approved][1] == "New text"

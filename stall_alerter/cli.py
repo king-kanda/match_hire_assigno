@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import csv
-import os
 import sys
 import textwrap
 import time
@@ -14,6 +13,7 @@ from pathlib import Path
 from stall_alerter import drafts as drafts_mod
 from stall_alerter import llm
 from stall_alerter.load import load_board
+from stall_alerter.providers import PROVIDERS, resolve
 from stall_alerter.rank import Ranked, rank
 from stall_alerter.rules import DEFAULT_STALL_DAYS, find_stalled
 
@@ -24,6 +24,8 @@ def parse_args(argv=None):
     p.add_argument("--days", type=int, default=DEFAULT_STALL_DAYS, help="Days without movement to count as stalled (default 3)")
     p.add_argument("--today", type=date.fromisoformat, default=None, help="Override today's date (YYYY-MM-DD), for demos and tests")
     p.add_argument("--no-ai", action="store_true", help="Rules-only ranking, no API calls")
+    p.add_argument("--provider", choices=list(PROVIDERS), default=None, help="LLM provider (default: LLM_PROVIDER env or anthropic)")
+    p.add_argument("--model", default=None, help="Model id for the provider (default: LLM_MODEL env or the provider default)")
     p.add_argument("--drafts", action="store_true", help="Draft follow-ups for the top N and review each one")
     p.add_argument("--top", type=int, default=5, help="How many candidates get drafts (default 5)")
     p.add_argument("--out", default="out", help="Folder for report.md / report.csv (default ./out)")
@@ -39,8 +41,8 @@ def _load_env():
         pass
 
 
-def print_report(ranked: list[Ranked], board, today: date, days: int, used_ai: bool) -> None:
-    mode = f"AI-assisted ({llm.MODEL})" if used_ai else "rules only"
+def print_report(ranked: list[Ranked], board, today: date, days: int, ai_label: str | None) -> None:
+    mode = f"AI-assisted ({ai_label})" if ai_label else "rules only"
     print(f"\nStall Alerter | {today} | threshold {days}d | {mode}")
     print(
         f"{len(board.active)} open candidates, {len(ranked)} stalled, "
@@ -98,25 +100,24 @@ def main(argv=None) -> int:
         print(f"Error: {e}", file=sys.stderr)
         return 1
 
+    cfg = None if args.no_ai else resolve(args.provider, args.model)
     flags = find_stalled(board.active, today, args.days)
-    use_ai = not args.no_ai
     ai = {}
-    if use_ai and flags:
-        print(f"Asking {llm.MODEL} to review {len(flags)} stalled candidates...", file=sys.stderr)
+    if cfg and flags:
+        print(f"Asking {cfg.label} to review {len(flags)} stalled candidates...", file=sys.stderr)
         t0 = time.time()
-        ai = llm.assess(flags)
+        ai = llm.assess(flags, cfg)
         print(f"Done in {time.time() - t0:.1f}s.", file=sys.stderr)
     ranked = rank(flags, ai)
-    used_ai = bool(ai)
 
-    print_report(ranked, board, today, args.days, used_ai)
+    print_report(ranked, board, today, args.days, cfg.label if ai else None)
     out_dir = Path(args.out)
     write_reports(ranked, board, out_dir, today, args.days)
     print(f"Saved {out_dir / 'report.md'} and {out_dir / 'report.csv'}")
 
     if args.drafts and ranked:
         top = ranked[: args.top]
-        drafts = drafts_mod.build_drafts(top, use_ai=use_ai)
+        drafts = drafts_mod.build_drafts(top, cfg)
         approved = drafts_mod.review(top, drafts)
         path = out_dir / "approved_drafts.md"
         drafts_mod.write_approved(approved, str(path))
