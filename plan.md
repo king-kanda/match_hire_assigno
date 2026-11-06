@@ -1,8 +1,9 @@
 # Plan: Stall Alerter (Quest Format C)
 
 **Quest:** Unlearn, Use, Raise the Load (Match Hire)
-**Window:** 5 days, starting 2026-11-06. Deadline is the countdown on the quest page.
-**Build style:** AI-first. Every day I log what the AI did, where it was wrong, and what I changed.
+**Window:** 5 days allowed. **The tool itself was built in about one day** (2026-11-05 evening to 2026-11-06 midday),
+working AI-first. The remaining days go to testing it with real models, the write-ups and the videos.
+**Build style:** AI-first. I log what the AI did, where it was wrong, and what I changed.
 
 ## The tool in one line
 A hiring manager with 40+ candidates runs one command on their hiring-board CSV. They get a ranked
@@ -18,9 +19,9 @@ there's a drafted follow-up message that they approve or edit before anything is
 | Ranking | Rules compute a base score. The chosen LLM reads `notes` and can only adjust it **within a limit**. |
 | Rule signals | Days stalled, stage weight (Offer > Final > Interview > Screening > Applied), `last_contact_by = them` (we owe a reply) |
 | AI signals | Free-text notes: competing offers, availability, flight risk, enthusiasm |
-| Output | Terminal table plus a `report.md`/`report.csv` |
-| Drafted nudge | In scope, **first to cut**. Always needs human approval and is never sent automatically. |
-| Stack | Python 3.10+ CLI. LLM is switchable with no fixed default: Anthropic, OpenAI, Groq, OpenRouter |
+| Output | Web UI (FastAPI + HTMX) and a CLI; `report.md`/`report.csv` export |
+| Drafted nudge | Built. Always needs human approval (approve / edit / skip / undo) and is never sent. |
+| Stack | Python 3.10+, FastAPI + HTMX UI, CLI. LLM is switchable with no fixed default: Anthropic, OpenAI, Groq, OpenRouter |
 | No API key | Falls back to a rules-only ranking so the demo can't fail |
 
 ## CSV schema (`data/board.csv`)
@@ -32,42 +33,48 @@ there's a drafted follow-up message that they approve or edit before anything is
 ## Architecture
 ```
 board.csv -> load (validate) -> rules.py (stalled? base score) -> llm.py (adjust within the limit, reason, action)
-          -> rank.py (final order) -> cli.py (table + report) -> [optional] drafts.py (human approves each)
+          -> rank.py (final order) -> web.py (HTMX UI) or cli.py (terminal) -> drafts.py (human approves each)
+providers.py: anthropic | openai | groq | openrouter, picked by flag > LLM_PROVIDER > whichever key is set
 ```
 
-## Day-by-day
-### Day 1: Intent + data
-- [ ] Rewrite `intent.md` in my own words (the AI draft is only a starting point)
-- [ ] `directive.md` v1: the instructions I give the AI for this build
-- [ ] Hand-write `data/board.csv` with about 45 rows **including the edge cases** (below)
-- [ ] Write the expected output: which candidates *should* be flagged, and in roughly what order
-- [ ] `logs/day-1.md`
+## What actually happened: built in ~1 day
+The original plan spread the build over 5 days. Working AI-first, it took two sessions:
 
-### Day 2: Rules engine (no AI)
-- [ ] `load.py` + validation (missing dates, bad stage, Hired/Rejected filtered out)
-- [ ] `rules.py`: stalled detection + base score
-- [ ] Tests against the expected output from Day 1
-- [ ] Working rules-only CLI
-- [ ] `directive.md` v2, `logs/day-2.md`
+### Session 1: 2026-11-05, ~23:00 to 00:00
+- [x] Grilled the idea first: picked format C, user = hiring manager with 40+ candidates, 3-day stall rule
+- [x] Repo scaffold + this plan
+- [x] Sample board (46 rows with every edge case) and `data/EXPECTED.md` written **before** the logic
+- [x] Rules engine (`load.py`, `rules.py`, `rank.py`), tests against the expected output
+- [x] LLM layer with the ±2 limit enforced in code; rules-only fallback
+- [x] Drafts with approve / edit / skip; `report.md` / `report.csv`
+- [x] Switchable providers (Anthropic, OpenAI, Groq, OpenRouter)
+- [x] First UI (Streamlit) + `TESTING.md`
 
-### Day 3: AI layer
-- [ ] `llm.py`: structured output (score adjustment within the limit, one-sentence reason, next action)
-- [ ] Limit enforced in code, not trusted to the prompt
-- [ ] Compare AI ranking against the rules-only ranking; log the disagreements
-- [ ] `directive.md` v3, `logs/day-3.md`
+### Session 2: 2026-11-06, midday
+- [x] Replaced Streamlit with FastAPI + HTMX (looks like a real tool, no JS build)
+- [x] Checked it in a real browser: fixed 2 console errors
+- [x] Removed the hard-coded Anthropic default; provider now auto-detected from whichever key is set
+- [x] 38 automated tests passing
 
-### Day 4: Drafts + polish
-- [ ] `drafts.py`: a follow-up draft per top-N candidate, with approve / edit / skip prompts (cut this if behind)
-- [ ] `report.md` export
-- [ ] README run instructions verified on a clean venv
-- [ ] `logs/day-4.md`
+### Course corrections along the way (material for the logs and `unlearned.md`)
+- The template drafts pasted the manager's to-do into the message to the candidate. Caught on a manual run.
+- The testing guide said 6 candidates were "waiting on us"; the real number was 4. Checked the numbers against the code.
+- Streamlit was the fast choice, but it looked like a prototype, so I swapped it for HTMX.
+- The docs and the default provider still assumed Claude after providers became switchable.
 
-### Day 5: Ship
-- [ ] Final `directive.md`
-- [ ] `unlearned.md` (one page)
-- [ ] Quest Loom (max 5 min): run, ranked list, explain #1 vs #2, approve one draft
+## Remaining days: prove it, write it up, record it
+- [ ] Run with at least one real API key; compare against rules-only using `TESTING.md` section 5
+- [ ] Run the same board on two providers; note where they disagree
+- [ ] Fix anything the real-model runs reveal (invented facts, weak drafts, bad JSON)
+- [ ] Rewrite `intent.md` and `directive.md` in my own words; add a final directive version
+- [ ] Logs (see note below), `unlearned.md`
+- [ ] Quest Loom (max 5 min): run, ranked list, explain #1 vs #2, AI vs rules, approve one draft
 - [ ] Career path & leverage video (separate, max 5 min)
-- [ ] `logs/day-5.md`, then submit all 7 deliverables
+- [ ] Submit all 7 deliverables
+
+**Note on the 5 daily logs:** the quest asks for a log for each of the 5 days. Since the build took about a day,
+write that honestly: day 1 = the build, the later days = testing with real models, fixes, write-ups and recording.
+Don't backfill a fake 5-day build.
 
 ## Edge cases the sample data must contain
 - Contacted yesterday, so **not** stalled despite an old stage date
@@ -79,16 +86,16 @@ board.csv -> load (validate) -> rules.py (stalled? base score) -> llm.py (adjust
 - Offer stage at exactly 3 days (boundary)
 
 ## Done means
-Given `data/board.csv`, `python -m stall_alerter data/board.csv` prints a ranked list where every
+Given `data/board.csv` (today = 2026-11-06), the UI or `python -m stall_alerter data/board.csv` shows a ranked list where every
 expected-stalled candidate appears, nobody unexpected appears, and every row has a reason and an action.
 It runs in under 30 seconds with an API key, and also runs without one.
 
 ## Deliverables checklist
 - [ ] Loom: tool working (max 5 min)
-- [ ] `intent.md`
-- [ ] Final `directive.md`
-- [ ] Working code + README
-- [ ] `logs/day-1..5.md`
+- [ ] `intent.md` (draft exists; rewrite in my own words)
+- [ ] Final `directive.md` (v1 drafted)
+- [x] Working code + README (+ `TESTING.md`)
+- [ ] `logs/day-1..5.md` (day 1 = build; days 2-5 = testing, fixes, write-ups)
 - [ ] `unlearned.md`
 - [ ] Career path & leverage video
 
