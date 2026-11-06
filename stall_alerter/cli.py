@@ -1,4 +1,5 @@
-"""CLI: python -m stall_alerter data/board.csv [--days 3] [--today YYYY-MM-DD] [--no-ai] [--drafts]"""
+"""CLI: python -m stall_alerter data/board.csv [--days 3] [--today YYYY-MM-DD] [--no-ai]
+        [--provider anthropic|openai|groq|openrouter] [--model ID] [--drafts] [--top 5] [--out out]"""
 
 from __future__ import annotations
 

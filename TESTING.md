@@ -11,10 +11,10 @@ loaded by default in both the UI and the CLI. What it *should* produce is writte
 
 ## 1. Setup (once)
 
-You need Python 3.10+. On this machine Python isn't on PATH, but `uv` is, so either:
+You need Python 3.10+. If `python` isn't on your PATH but `uv` is (as on the build machine), use Option A:
 
 ```bash
-# Option A: uv (already installed)
+# Option A: uv
 uv venv --python 3.12
 uv pip install -r requirements.txt
 
