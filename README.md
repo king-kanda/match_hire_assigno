@@ -109,8 +109,8 @@ tests/            pytest suite
 ```
 
 ## Project docs
-- [plan.md](plan.md): decisions, what was built when, what's left
-- [intent.md](intent.md): what and why
+- [plan.md](plan.md): background: decision history, timeline, what's left (not a deliverable)
+- [intent.md](intent.md): what and why (working version)
 - [directive.md](directive.md): how I direct the AI
 - [TESTING.md](TESTING.md): how to test and demo
 - [logs/](logs/): daily logs

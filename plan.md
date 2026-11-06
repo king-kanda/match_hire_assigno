@@ -1,5 +1,8 @@
 # Plan: Stall Alerter (Quest Format C)
 
+> Background document, not a quest deliverable. The working statement of what the tool does is
+> [intent.md](intent.md).
+
 **Quest:** Unlearn, Use, Raise the Load (Match Hire)
 **Window:** 5 days allowed. **The tool itself was built in about one day** (2026-11-05 evening to 2026-11-06 midday),
 working AI-first. The remaining days go to testing it with real models, the write-ups and the videos.
@@ -66,7 +69,7 @@ The original plan spread the build over 5 days. Working AI-first, it took two se
 - [ ] Run with at least one real API key; compare against rules-only using `TESTING.md` section 5
 - [ ] Run the same board on two providers; note where they disagree
 - [ ] Fix anything the real-model runs reveal (invented facts, weak drafts, bad JSON)
-- [ ] Rewrite `intent.md` and `directive.md` in my own words; add a final directive version
+- [ ] Rewrite `directive.md` in my own words; add a final directive version
 - [ ] Logs (see note below), `unlearned.md`
 - [ ] Quest Loom (max 5 min): run, ranked list, explain #1 vs #2, AI vs rules, approve one draft
 - [ ] Career path & leverage video (separate, max 5 min)
@@ -92,7 +95,7 @@ It runs in under 30 seconds with an API key, and also runs without one.
 
 ## Deliverables checklist
 - [ ] Loom: tool working (max 5 min)
-- [ ] `intent.md` (draft exists; rewrite in my own words)
+- [x] `intent.md` (working version)
 - [ ] Final `directive.md` (v1 drafted)
 - [x] Working code + README (+ `TESTING.md`)
 - [ ] `logs/day-1..5.md` (day 1 = build; days 2-5 = testing, fixes, write-ups)
