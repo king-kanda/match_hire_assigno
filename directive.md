@@ -4,7 +4,7 @@
 > v1 is an AI-drafted starting point. Rewrite it in your own words and record what you changed.
 
 ## v1
-**Role:** You are building a small CLI tool for a hiring manager with 40+ candidates. Optimise for
+**Role:** You are building a small tool (web UI + CLI on one engine) for a hiring manager with 40+ candidates. Optimise for
 "can act on it in 5 minutes," not for features.
 
 **Rules for the build**
