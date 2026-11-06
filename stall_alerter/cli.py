@@ -24,7 +24,7 @@ def parse_args(argv=None):
     p.add_argument("--days", type=int, default=DEFAULT_STALL_DAYS, help="Days without movement to count as stalled (default 3)")
     p.add_argument("--today", type=date.fromisoformat, default=None, help="Override today's date (YYYY-MM-DD), for demos and tests")
     p.add_argument("--no-ai", action="store_true", help="Rules-only ranking, no API calls")
-    p.add_argument("--provider", choices=list(PROVIDERS), default=None, help="LLM provider (default: LLM_PROVIDER env or anthropic)")
+    p.add_argument("--provider", choices=list(PROVIDERS), default=None, help="LLM provider (default: LLM_PROVIDER, else the first provider with an API key set, else rules only)")
     p.add_argument("--model", default=None, help="Model id for the provider (default: LLM_MODEL env or the provider default)")
     p.add_argument("--drafts", action="store_true", help="Draft follow-ups for the top N and review each one")
     p.add_argument("--top", type=int, default=5, help="How many candidates get drafts (default 5)")
@@ -101,6 +101,8 @@ def main(argv=None) -> int:
         return 1
 
     cfg = None if args.no_ai else resolve(args.provider, args.model)
+    if cfg is None and not args.no_ai:
+        print("No LLM configured (no --provider, LLM_PROVIDER or API key found): rules-only ranking.", file=sys.stderr)
     flags = find_stalled(board.active, today, args.days)
     ai = {}
     if cfg and flags:

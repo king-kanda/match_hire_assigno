@@ -33,7 +33,7 @@ API keys (optional, only for the AI parts): `cp .env.example .env` and fill in *
 | Groq (free tier, cheapest demo) | `GROQ_API_KEY=...` |
 | OpenRouter | `OPENROUTER_API_KEY=...` |
 
-Optionally set `LLM_PROVIDER=groq` (etc.) so you don't have to choose it every time.
+With one key set, that provider is picked automatically. Set `LLM_PROVIDER=groq` (etc.) only if you have several keys.
 
 ---
 
@@ -42,7 +42,7 @@ Optionally set `LLM_PROVIDER=groq` (etc.) so you don't have to choose it every t
 ```bash
 pytest
 ```
-Expect **35 passed**. They need no network and no keys. They cover:
+Expect **38 passed**. They need no network and no keys. They cover:
 - the flagged set equals `EXPECTED.md` (24 stalled), closed rows ignored, bad rows reported
 - edge cases: 3-day boundary, a recent contact resets the clock, waiting on us, ties, day cap
 - the AI score change clamped to ±2, unknown AI rows ignored, fallback to rules

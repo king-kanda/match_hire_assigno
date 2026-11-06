@@ -5,8 +5,9 @@
 - groq        : Groq (OpenAI-compatible endpoint)
 - openrouter  : OpenRouter (OpenAI-compatible endpoint, any model it hosts)
 
-Choose with --provider/--model or LLM_PROVIDER/LLM_MODEL in .env. Any failure returns None so the
-caller falls back to rules.
+No provider is privileged. Choose with --provider/--model or LLM_PROVIDER/LLM_MODEL in .env; if neither
+is set, the first provider with an API key in the environment is used, and with no keys the tool runs
+rules-only. Any failure returns None so the caller falls back to rules.
 """
 
 from __future__ import annotations
@@ -37,9 +38,6 @@ PROVIDERS = {
     "groq": ProviderInfo("groq", "GROQ_API_KEY", "llama-3.3-70b-versatile", "https://api.groq.com/openai/v1"),
     "openrouter": ProviderInfo("openrouter", "OPENROUTER_API_KEY", "openai/gpt-4.1-mini", "https://openrouter.ai/api/v1"),
 }
-DEFAULT_PROVIDER = "anthropic"
-
-
 @dataclass
 class LLMConfig:
     provider: str
@@ -50,9 +48,19 @@ class LLMConfig:
         return f"{self.provider}:{self.model}"
 
 
-def resolve(provider: str | None = None, model: str | None = None) -> LLMConfig:
-    """CLI flags win over env vars, which win over defaults."""
-    name = (provider or os.getenv("LLM_PROVIDER") or DEFAULT_PROVIDER).strip().lower()
+def detect_provider() -> str | None:
+    """No hard-coded default: LLM_PROVIDER if set, else the first provider with an API key in the env, else None."""
+    explicit = (os.getenv("LLM_PROVIDER") or "").strip().lower()
+    if explicit:
+        return explicit
+    return next((name for name, info in PROVIDERS.items() if os.getenv(info.key_env)), None)
+
+
+def resolve(provider: str | None = None, model: str | None = None) -> LLMConfig | None:
+    """Flag > LLM_PROVIDER > first provider with a key. Returns None when nothing is configured (rules only)."""
+    name = (provider or detect_provider() or "").strip().lower()
+    if not name:
+        return None
     if name not in PROVIDERS:
         raise ValueError(f"Unknown provider '{name}'. Choose one of: {', '.join(PROVIDERS)}")
     chosen_model = model or os.getenv("LLM_MODEL") or PROVIDERS[name].default_model

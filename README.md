@@ -10,17 +10,19 @@ Optionally drafts follow-up messages that **a human approves, edits or skips. No
 - **No API key, or the provider fails?** It falls back to rules-only output, so the tool always runs.
 
 ## LLM providers
-Switch with `--provider` / `--model`, or set `LLM_PROVIDER` / `LLM_MODEL` in `.env` (flags win).
+No provider is the default. Pick one with `--provider` / `--model` (or the dropdown in the UI), or set
+`LLM_PROVIDER` / `LLM_MODEL` in `.env`. If neither is set, the tool uses whichever provider has an API key
+in the environment, and with no keys at all it runs rules-only.
 
 | `--provider` | Key in `.env` | Default model |
 |---|---|---|
-| `anthropic` (default) | `ANTHROPIC_API_KEY` | `claude-sonnet-5-5` |
+| `anthropic` | `ANTHROPIC_API_KEY` | `claude-sonnet-5-5` |
 | `openai` | `OPENAI_API_KEY` | `gpt-4.1-mini` |
 | `groq` | `GROQ_API_KEY` | `llama-3.3-70b-versatile` |
 | `openrouter` | `OPENROUTER_API_KEY` | `openai/gpt-4.1-mini` |
 
 Defaults are starting points; check the provider's current model list and pass `--model` to change.
-Claude uses the Anthropic SDK's structured output. OpenAI, Groq and OpenRouter share one
+Anthropic uses its SDK's structured output. OpenAI, Groq and OpenRouter share one
 OpenAI-compatible adapter using JSON mode, and every response is validated with Pydantic before use.
 
 ## Setup
@@ -75,7 +77,7 @@ contact-resets-clock, owe-reply, ties, capped days, AI clamp, fallback, draft re
 
 ## How the score works
 `2 × stage weight (Applied 1 … Offer 5) + 0.5 × days quiet (capped at 14) + 3 if we owe a reply`,
-then `± up to 2` from Claude based on notes (competing offer, referral, mismatch, etc.).
+then `± up to 2` from the LLM you chose, based on notes (competing offer, referral, mismatch, etc.).
 
 ## Project docs
 - [plan.md](plan.md): plan and decisions

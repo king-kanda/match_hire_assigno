@@ -15,12 +15,12 @@ there's a drafted follow-up message that they approve or edit before anything is
 | User | A hiring manager with 40+ active candidates who checks in short bursts and wants about 5 minutes to act |
 | Stall rule | **3 days** without movement (can be changed with `--days`) |
 | "Moved" means | A stage change **or** a logged contact (email, call or interview) |
-| Ranking | Rules compute a base score. Claude reads `notes` and can only adjust it **within a limit**. |
+| Ranking | Rules compute a base score. The chosen LLM reads `notes` and can only adjust it **within a limit**. |
 | Rule signals | Days stalled, stage weight (Offer > Final > Interview > Screening > Applied), `last_contact_by = them` (we owe a reply) |
 | AI signals | Free-text notes: competing offers, availability, flight risk, enthusiasm |
 | Output | Terminal table plus a `report.md`/`report.csv` |
 | Drafted nudge | In scope, **first to cut**. Always needs human approval and is never sent automatically. |
-| Stack | Python 3.10+ CLI. LLM is switchable: Anthropic (default `claude-sonnet-5-5`), OpenAI, Groq, OpenRouter |
+| Stack | Python 3.10+ CLI. LLM is switchable with no fixed default: Anthropic, OpenAI, Groq, OpenRouter |
 | No API key | Falls back to a rules-only ranking so the demo can't fail |
 
 ## CSV schema (`data/board.csv`)

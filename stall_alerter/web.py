@@ -21,7 +21,7 @@ from fastapi.templating import Jinja2Templates
 from stall_alerter import drafts as drafts_mod
 from stall_alerter import llm
 from stall_alerter.load import Board, load_board, load_board_text
-from stall_alerter.providers import PROVIDERS, LLMConfig, resolve
+from stall_alerter.providers import PROVIDERS, LLMConfig, detect_provider, resolve
 from stall_alerter.rank import Ranked, rank
 from stall_alerter.rules import DEFAULT_STALL_DAYS, find_stalled
 
@@ -90,7 +90,7 @@ def _provider_context(provider: str) -> dict:
 
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request):
-    default_provider = os.getenv("LLM_PROVIDER", RULES_ONLY)
+    default_provider = detect_provider()  # LLM_PROVIDER, else first provider with a key, else rules only
     if default_provider not in PROVIDERS:
         default_provider = RULES_ONLY
     return templates.TemplateResponse(request, "index.html", {

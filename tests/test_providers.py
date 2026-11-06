@@ -43,3 +43,26 @@ def test_openai_compatible_bad_json_returns_none():
 def test_missing_key_falls_back(monkeypatch):
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     assert complete_json(resolve("openai", "m"), "sys", "user", AssessmentBatch) is None
+
+
+@pytest.fixture
+def no_llm_env(monkeypatch):
+    for var in ["LLM_PROVIDER", "LLM_MODEL", *(i.key_env for i in PROVIDERS.values())]:
+        monkeypatch.delenv(var, raising=False)
+    return monkeypatch
+
+
+def test_no_config_means_rules_only(no_llm_env):
+    assert resolve() is None
+
+
+def test_auto_picks_provider_with_a_key(no_llm_env):
+    no_llm_env.setenv("GROQ_API_KEY", "x")
+    assert resolve().provider == "groq"
+
+
+def test_explicit_choice_beats_detected_key(no_llm_env):
+    no_llm_env.setenv("GROQ_API_KEY", "x")
+    no_llm_env.setenv("LLM_PROVIDER", "openrouter")
+    assert resolve().provider == "openrouter"
+    assert resolve("openai").provider == "openai"
