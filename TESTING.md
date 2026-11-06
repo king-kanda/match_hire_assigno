@@ -42,37 +42,40 @@ Optionally set `LLM_PROVIDER=groq` (etc.) so you don't have to choose it every t
 ```bash
 pytest
 ```
-Expect **28 passed**. They need no network and no keys. They cover:
+Expect **35 passed**. They need no network and no keys. They cover:
 - the flagged set equals `EXPECTED.md` (24 stalled), closed rows ignored, bad rows reported
 - edge cases: 3-day boundary, a recent contact resets the clock, waiting on us, ties, day cap
 - the AI score change clamped to ±2, unknown AI rows ignored, fallback to rules
 - provider switching and JSON parsing for OpenAI-style providers (fake clients)
-- the UI driven headlessly: sample loads, drafts generate, approve and skip work
+- the web UI over HTTP: sample + upload, bad CSV/date errors, HTML escaping, provider fallback,
+  drafts generate, approve (with edits) / skip / undo, download contains only approved drafts
 
-The first run can take ~60s while Streamlit warms up; after that it's ~2s.
+Runs in about 2 seconds.
 
 ---
 
 ## 3. The UI (this is what to demo)
 
 ```bash
-streamlit run app.py
+python -m stall_alerter.web            # add --port 8001 if 8000 is busy
 ```
-Opens http://localhost:8501.
+Open http://127.0.0.1:8000. It's FastAPI + HTMX: the server returns HTML fragments and HTMX swaps them
+in, so there is no JavaScript build step. It listens on localhost only.
 
 **Walkthrough**
-1. Sidebar: leave the upload empty (it uses the sample), Today = 2026-11-06, threshold = 3.
+1. Top panel: leave the upload empty (it uses the sample), Today = 2026-11-06, threshold = 3.
 2. Provider: pick **Rules only** first and press **Find stalled candidates**.
    - Check the metrics: **40 open, 24 stalled, 4 waiting on us, 2 data problems**.
    - Check the top 2 are **Wanjiru Kamau** (Offer, 6 days) and **Grace Achieng** (Final, waiting on us).
    - Open **Data problems**: C044 (missing date) and C045 (unknown stage "Onsite").
-3. Switch Provider to one you have a key for (or paste the key into the sidebar box) and run again.
-   - The **AI adj.** column shows the nudges, never more than ±2.
+3. Switch Provider to one you have a key for (or paste the key into the key box that appears) and run again.
+   - Green/red **+N AI** badges in the Score column show the nudges, never more than ±2.
    - "Why" and "Next action" should now quote the notes (competing offer, CTO referral, etc.).
 4. Scroll to **Follow-up drafts** and press **Generate drafts** (top 5).
    - Edit one message in its text box, then **Approve**. **Skip** another. **Undo** works.
+   - Each click swaps only that card and the counter (no page reload).
    - **Download approved drafts** gives a `.md` of only the approved messages. Nothing is sent anywhere.
-5. Try your own CSV with the sidebar upload (same columns as the sample; see README).
+5. Try your own CSV with the file picker (same columns as the sample; see README).
 
 ---
 
@@ -117,7 +120,8 @@ falls back to the rules ranking. That's expected, not a crash.
 | Symptom | Fix |
 |---|---|
 | `python` opens the Microsoft Store | Use `uv` (Option A) or install Python from python.org with "Add to PATH" |
-| "`X_API_KEY` is not set" | Add it to `.env` or paste it in the UI sidebar |
+| "`X_API_KEY` is not set" | Add it to `.env` or paste it in the key box in the UI |
 | "model not found" / 404 | The default model id is out of date; pass `--model` or edit it in the UI |
 | Everyone (or no one) is stalled | "Today" is wrong for the data; use 2026-11-06 for the sample |
-| Port 8501 busy | `streamlit run app.py --server.port 8502` |
+| Port 8000 busy | `python -m stall_alerter.web --port 8001` |
+| "Run not found" after clicking a draft | The server restarted (runs are kept in memory); press Find stalled candidates again |

@@ -1,0 +1,5 @@
+{% set n = run.counts() %}
+<div id="draft-counter" class="counter"{% if oob_counter %} hx-swap-oob="true"{% endif %}>
+  <b>{{ n.approved }}</b> approved, <b>{{ n.skipped }}</b> skipped, <b>{{ n.pending }}</b> pending.
+  {% if n.approved %}<a class="button" href="/runs/{{ run.id }}/approved.md" download>Download approved drafts (.md)</a>{% endif %}
+</div>

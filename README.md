@@ -35,9 +35,9 @@ With [uv](https://docs.astral.sh/uv/): `uv venv --python 3.12 && uv pip install 
 
 ## Web UI (for the demo)
 ```bash
-streamlit run app.py
+python -m stall_alerter.web      # then open http://127.0.0.1:8000
 ```
-It loads the sample board by default (or upload your own CSV). Pick a provider, see the ranked list,
+FastAPI + HTMX (server-rendered HTML, no JS build; htmx is vendored in `stall_alerter/static`). It loads the sample board by default (or upload your own CSV). Pick a provider, see the ranked list,
 then generate drafts and **edit / approve / skip** each one; download only the approved ones.
 Full walkthrough: [TESTING.md](TESTING.md).
 

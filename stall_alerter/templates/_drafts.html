@@ -1,0 +1,5 @@
+{% include "_counter.html" %}
+{% for cid in run.drafts %}
+  {% set r = run.by_id()[cid] %}
+  {% include "_draft_card.html" %}
+{% endfor %}

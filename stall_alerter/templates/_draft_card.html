@@ -1,0 +1,19 @@
+{% set c = r.flag.candidate %}
+{% set status = run.status[c.candidate_id] %}
+<form id="card-{{ c.candidate_id }}" class="card status-{{ status }}" hx-target="this" hx-swap="outerHTML">
+  <div class="card-head">
+    <span><b>{{ c.name }}</b> | {{ c.role }} | {{ c.stage }} | {{ r.flag.days_quiet }}d quiet | owner {{ c.owner }}</span>
+    <span class="badge badge-{{ status }}">{{ status|upper }}</span>
+  </div>
+  <p class="muted small">Next action: {{ r.next_action }}</p>
+  <textarea name="text" rows="5" {% if status != "pending" %}readonly{% endif %}>{{ run.drafts[c.candidate_id] }}</textarea>
+  <div class="card-actions">
+    {% if status == "pending" %}
+      <button type="button" class="primary" hx-post="/runs/{{ run.id }}/drafts/{{ c.candidate_id }}/approve">Approve</button>
+      <button type="button" hx-post="/runs/{{ run.id }}/drafts/{{ c.candidate_id }}/skip">Skip</button>
+    {% else %}
+      <button type="button" hx-post="/runs/{{ run.id }}/drafts/{{ c.candidate_id }}/undo">Undo</button>
+    {% endif %}
+  </div>
+</form>
+{% if oob_counter %}{% include "_counter.html" %}{% endif %}

@@ -1,0 +1,16 @@
+{% if provider != "rules" %}
+<div class="field">
+  <label for="model">Model</label>
+  <input type="text" id="model" name="model" value="{{ default_model }}">
+</div>
+<div class="field">
+  <label for="api_key">{{ key_env }}</label>
+  {% if key_loaded %}
+  <input type="password" id="api_key" name="api_key" placeholder="loaded from .env">
+  <small class="muted">Key found in the environment.</small>
+  {% else %}
+  <input type="password" id="api_key" name="api_key" placeholder="paste key (kept in memory only)">
+  <small class="muted">Not in .env. Paste it here for this session.</small>
+  {% endif %}
+</div>
+{% endif %}

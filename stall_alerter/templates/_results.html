@@ -1,0 +1,64 @@
+{% if run.warning %}<div class="panel alert warn">{{ run.warning }}</div>{% endif %}
+
+<div class="stats">
+  <div class="stat"><span class="num">{{ run.board.active|length }}</span><span class="label">Open candidates</span></div>
+  <div class="stat"><span class="num" id="stat-stalled">{{ run.ranked|length }}</span><span class="label">Stalled ({{ run.days }}+ days)</span></div>
+  <div class="stat"><span class="num" id="stat-waiting">{{ run.ranked|selectattr("flag.owe_reply")|list|length }}</span><span class="label">Waiting on us</span></div>
+  <div class="stat"><span class="num" id="stat-problems">{{ run.board.problems|length }}</span><span class="label">Data problems</span></div>
+</div>
+<p class="muted small">
+  Source: {{ run.source }} | today = {{ run.today }} |
+  ranking: <b id="ranking-mode">{% if run.cfg %}AI-assisted ({{ run.cfg.label }}){% else %}rules only{% endif %}</b>
+  | {{ run.board.closed_count }} closed candidates ignored
+</p>
+
+{% if run.ranked %}
+<div class="panel table-wrap">
+<table id="ranked">
+  <thead><tr>
+    <th>#</th><th>Candidate</th><th>Stage</th><th>Quiet</th><th>Score</th><th>Why</th><th>Next action</th><th>Owner</th>
+  </tr></thead>
+  <tbody>
+  {% for r in run.ranked %}
+  {% set c = r.flag.candidate %}
+  <tr class="{% if r.flag.owe_reply %}owe{% endif %}" data-id="{{ c.candidate_id }}">
+    <td>{{ loop.index }}</td>
+    <td><b>{{ c.name }}</b><br><span class="muted small">{{ c.role }}</span></td>
+    <td><span class="stage stage-{{ c.stage|lower }}">{{ c.stage }}</span>
+        {% if r.flag.owe_reply %}<br><span class="tag">waiting on us</span>{% endif %}</td>
+    <td>{{ r.flag.days_quiet }}d</td>
+    <td>{{ "%g"|format(r.final_score) }}
+        {% if r.adjustment %}<span class="adj {% if r.adjustment > 0 %}up{% else %}down{% endif %}">{{ "%+d"|format(r.adjustment) }} AI</span>{% endif %}</td>
+    <td>{{ r.reason }}</td>
+    <td>{{ r.next_action }}</td>
+    <td>{{ c.owner }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<div class="panel">Nobody is stalled at this threshold.</div>
+{% endif %}
+
+{% if run.board.problems %}
+<details class="panel">
+  <summary>Data problems ({{ run.board.problems|length }}): fix these in the board</summary>
+  <ul>{% for cid, msg in run.board.problems %}<li><b>{{ cid }}</b>: {{ msg }}</li>{% endfor %}</ul>
+</details>
+{% endif %}
+
+{% if run.ranked %}
+<section class="panel">
+  <h2>Follow-up drafts</h2>
+  <p class="muted">Every draft needs your approval. Nothing is sent: approved messages are exported for you to copy.</p>
+  <form class="inline" hx-post="/runs/{{ run.id }}/drafts" hx-target="#drafts" hx-indicator="#draft-indicator"
+        hx-disabled-elt="find button">
+    <label for="top_n">Draft for the top</label>
+    <input type="number" id="top_n" name="top_n" min="1" max="{{ run.ranked|length }}" value="{{ [5, run.ranked|length]|min }}">
+    <button type="submit">Generate drafts</button>
+    <span id="draft-indicator" class="htmx-indicator muted">Drafting...</span>
+  </form>
+  <div id="drafts"></div>
+</section>
+{% endif %}
